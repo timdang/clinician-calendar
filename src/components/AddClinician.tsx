@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import { Clinician, ClinicianColor } from "../features/types";
 
 export interface AddClinicianProps {
@@ -67,9 +68,15 @@ function AddClinician({ clinician, onClose, onCancel }: AddClinicianProps) {
           Cancel
         </button>
         <button
-          className="rounded-lg px-4 py-2 m-2 bg-blue-800 text-blue-100"
+          className="rounded-lg px-4 py-2 m-2 bg-blue-800 text-blue-100 disabled:bg-gray-300 disabled:text-white"
           type="button"
           onClick={() => onClose(newClinician)}
+          disabled={
+            !newClinician.firstName ||
+            !newClinician.lastName ||
+            !newClinician.color ||
+            !newClinician.startDate
+          }
         >
           Add Clinician
         </button>

@@ -6,6 +6,7 @@ import AddClinician from "./components/AddClinician";
 import { Clinician } from "./features/types";
 
 function App() {
+  const [clinicians, setClinicians] = useState<Clinician[]>([]);
   const [showAdd, setShowAdd] = useState(false);
   return (
     <div className="App">
@@ -21,12 +22,15 @@ function App() {
         <AddClinician
           clinician={{} as Clinician}
           onClose={(clinician) => {
-            console.log("c", clinician);
+            setClinicians([...clinicians, ...[clinician]]);
             setShowAdd(false);
           }}
           onCancel={() => setShowAdd(false)}
         />
       )}
+      {clinicians.map((clinician) => (
+        <div key={clinician.startDate}>{clinician.firstName}</div>
+      ))}
     </div>
   );
 }
