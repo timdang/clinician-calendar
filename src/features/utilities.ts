@@ -14,8 +14,8 @@ export const mapDays = (
   trainingDays: number,
   daysOff: string[],
   holidaySchedule: string[]
-): Date[] => {
-  const days: Date[] = [];
+): string[] => {
+  const days: string[] = [];
   while (trainingDays) {
     const previousTrainingDay = last(days);
     let nextDay = previousTrainingDay
@@ -34,7 +34,7 @@ export const mapDays = (
         nextDay = addBusinessDays(nextDay, 1);
       }
     });
-    days.push(nextDay);
+    days.push(nextDay.toLocaleDateString());
     trainingDays--;
   }
   return days;
@@ -47,8 +47,7 @@ export const mapCliniciansToDates = (
   const days: Map<string, Clinician[]> = new Map();
 
   clinicians.forEach((clinician) => {
-    clinician.workDays.forEach((workDay) => {
-      const dateString = workDay.toLocaleDateString();
+    clinician.workDays.forEach((dateString) => {
       if (!days.has(dateString)) {
         days.set(dateString, []);
       }

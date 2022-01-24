@@ -9,7 +9,9 @@ import { mapDays } from "./features/utilities";
 import { Calendar } from "./components/Calendar";
 
 function App() {
-  const [clinicians, setClinicians] = useState<Clinician[]>([]);
+  const [clinicians, setClinicians] = useState<Clinician[]>(
+    JSON.parse(localStorage.getItem("clinicians") || "")
+  );
   const [showAdd, setShowAdd] = useState(false);
   const [holidayCalendar] = useState(["01/01/2022", "07/04/2022"]);
   const onClinicianEdit = (modifiedClinician: Clinician) => {
@@ -24,6 +26,7 @@ function App() {
     );
     modifiedClinicians.push(modifiedClinician);
     setClinicians(modifiedClinicians);
+    localStorage.setItem("clinicians", JSON.stringify(modifiedClinicians));
   };
 
   const onClinicianAdd = (clinician: Clinician) => {
@@ -34,44 +37,58 @@ function App() {
       clinician.daysOff,
       holidayCalendar
     );
-    setClinicians([...clinicians, ...[clinician]]);
+    const modifiedClinicians = [...clinicians, ...[clinician]];
+    setClinicians(modifiedClinicians);
+    localStorage.setItem("clinicians", JSON.stringify(modifiedClinicians));
   };
+
+  const onDeleteClinician = (deleted: Clinician) => {
+    let modifiedClinicians = clinicians.filter(
+      (oldClinician) => oldClinician.guid !== deleted.guid
+    );
+    setClinicians(modifiedClinicians);
+    localStorage.setItem("clinicians", JSON.stringify(modifiedClinicians));
+  };
+
   return (
     <div className="App">
-      <h1 className="text-3xl font-bold py-4 underline">Clinician Calendar</h1>
       <button
-        className="rounded-lg px-4 py-2 m-2 bg-blue-800 text-blue-100"
+        className="rounded-lg px-4 py-2 m-2 bg-blue-800 text-blue-100 float-right"
         type="button"
         onClick={() => setShowAdd(true)}
       >
         + Add Clinician
       </button>
+      <h1 className="text-3xl font-bold py-4 underline">Clinician Calendar</h1>
       {showAdd && (
-        <AddEditClinician
-          clinician={{
-            firstName: "",
-            lastName: "",
-            startDate: "",
-            color: "",
-            guid: "",
-            workDays: [],
-            trainingDays: 0,
-            daysOff: [],
-          }}
-          onClose={(clinician) => {
-            onClinicianAdd(clinician);
-            setShowAdd(false);
-          }}
-          onCancel={() => setShowAdd(false)}
-        />
+        <div className="w-1/3 float-right">
+          <AddEditClinician
+            clinician={{
+              firstName: "",
+              lastName: "",
+              startDate: "",
+              color: "",
+              guid: "",
+              workDays: [],
+              trainingDays: 0,
+              daysOff: [],
+            }}
+            onClose={(clinician) => {
+              onClinicianAdd(clinician);
+              setShowAdd(false);
+            }}
+            onCancel={() => setShowAdd(false)}
+          />
+        </div>
       )}
       <div className="flex">
         {clinicians.map((clinician) => (
-          <div key={clinician.guid} className="w-64 p-3">
+          <div key={clinician.guid} className="w-1/3 p-3">
             <ExistingClinician
               clinician={clinician}
               onClose={onClinicianEdit}
               onCancel={() => undefined}
+              onDelete={onDeleteClinician}
             />
           </div>
         ))}

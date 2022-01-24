@@ -6,7 +6,7 @@ import AddEditClinician, { AddClinicianProps } from "./AddClinician";
 export const ExistingClinician = ({
   clinician,
   onClose,
-  onCancel,
+  onDelete,
 }: AddClinicianProps) => {
   const [isEditingClinician, setIsEditingClinician] = useState(false);
   if (!clinician) return <></>;
@@ -19,6 +19,7 @@ export const ExistingClinician = ({
         onClose(editedClinician);
       }}
       onCancel={() => setIsEditingClinician(false)}
+      onDelete={onDelete}
       isEditing
     />
   ) : (
@@ -36,9 +37,13 @@ export const ExistingClinician = ({
         </button>
       </div>
       <div>
-        First Training: {first(clinician.workDays)?.toLocaleDateString()}
+        First Training:{" "}
+        {new Date(first(clinician.workDays) || "").toLocaleDateString()}
       </div>
-      <div>Last Training: {last(clinician.workDays)?.toLocaleDateString()}</div>
+      <div>
+        Last Training:{" "}
+        {new Date(last(clinician.workDays) || "").toLocaleDateString()}
+      </div>
     </div>
   );
 };

@@ -11,7 +11,7 @@ export const Calendar = ({ clinicians }: CalendarProps) => {
     <div className="grid grid-cols-5">
       {dayDetails.map((day) => (
         <div key={day.date.toString()} className="border rounded m-2">
-          <div>{day.date}</div>
+          <div>{new Date(day.date).toLocaleDateString()}</div>
           {day.cliniciansWorking.map((c) => (
             <div key={c.guid}>
               <span style={{ color: c.color }}>

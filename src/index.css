@@ -11,6 +11,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-input {
-  border: 1px solid darkgreen;
+input,
+select {
+  @apply rounded border border-gray-600 p-1;
 }

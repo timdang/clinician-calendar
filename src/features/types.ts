@@ -2,7 +2,7 @@ export interface Clinician {
   firstName: string;
   lastName: string;
   startDate: string;
-  workDays: Date[];
+  workDays: string[];
   color: ClinicianColor;
   guid: string;
   trainingDays: number;

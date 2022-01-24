@@ -6,6 +6,7 @@ export interface AddClinicianProps {
   clinician: Clinician;
   onClose: (clinician: Clinician) => void;
   onCancel: () => void;
+  onDelete?: (clinician: Clinician) => void;
   isEditing?: boolean;
 }
 
@@ -14,6 +15,7 @@ function AddEditClinician({
   onClose,
   onCancel,
   isEditing,
+  onDelete,
 }: AddClinicianProps) {
   const [newClinician, setNewClinician] = useState<Clinician>(clinician);
 
@@ -22,17 +24,19 @@ function AddEditClinician({
   };
 
   return (
-    <div className="flex flex-col items-start px-10">
+    <div className="grid grid-flow-row">
       <div>
-        First Name:{" "}
+        First:{" "}
         <input
-          className="m-2"
+          className="m-2 w-1/2"
           value={newClinician.firstName}
           onChange={(e) => handleChange(e, "firstName")}
         />
-        Last Name:{" "}
+      </div>
+      <div>
+        Last:{" "}
         <input
-          className="m-2"
+          className="m-2 w-1/2"
           value={newClinician.lastName}
           onChange={(e) => handleChange(e, "lastName")}
         />
@@ -45,37 +49,51 @@ function AddEditClinician({
           value={newClinician.startDate}
           onChange={(e) => handleChange(e, "startDate")}
         />
-        Training Days:
-        <input
-          className="m-2"
-          type="number"
-          value={newClinician.trainingDays}
-          onChange={(e) => handleChange(e, "trainingDays")}
-        />
-        Color:
-        <select
-          className="m-2"
-          name="color"
-          value={newClinician.color}
-          onChange={(e) => handleChange(e, "color")}
-        >
-          <option value=""></option>
-          <option value="green">Green</option>
-          <option value="blue">Blue</option>
-          <option value="rebeccapurple">Purple</option>
-          <option value="red">Red</option>
-        </select>
+        <div>
+          Training Days:
+          <input
+            className="m-2 w-1/4"
+            type="number"
+            value={newClinician.trainingDays}
+            onChange={(e) => handleChange(e, "trainingDays")}
+          />
+        </div>
+        <div>
+          Color:
+          <select
+            className="m-2 w-1/2"
+            name="color"
+            value={newClinician.color}
+            onChange={(e) => handleChange(e, "color")}
+          >
+            <option value=""></option>
+            <option value="green">Green</option>
+            <option value="blue">Blue</option>
+            <option value="rebeccapurple">Purple</option>
+            <option value="red">Red</option>
+          </select>
+        </div>
       </div>
-      <div>
+      <div className="flex">
+        {onDelete && (
+          <button
+            className="mr-8 text-red-800"
+            type="button"
+            onClick={() => onDelete(newClinician)}
+          >
+            Delete
+          </button>
+        )}
         <button
-          className="rounded-lg px-4 py-2 m-2 bg-blue-100 text-blue-800"
+          className="px-4 py-2 text-blue-800"
           type="button"
           onClick={onCancel}
         >
           Cancel
         </button>
+
         <button
-          className="rounded-lg px-4 py-2 m-2 bg-blue-800 text-blue-100 disabled:bg-gray-300 disabled:text-white"
+          className="rounded-lg px-4 py-1 m-2 bg-blue-800 text-blue-100 disabled:bg-gray-300 disabled:text-white"
           type="button"
           onClick={() => onClose(newClinician)}
           disabled={
@@ -85,7 +103,7 @@ function AddEditClinician({
             !newClinician.startDate
           }
         >
-          {isEditing ? "Edit" : "Add"} Clinician
+          {isEditing ? "Save" : "Add"}
         </button>
       </div>
     </div>
