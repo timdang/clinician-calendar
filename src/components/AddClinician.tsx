@@ -1,65 +1,72 @@
 import { useState } from "react";
 
-import { Clinician, ClinicianColor } from "../features/types";
+import { Clinician } from "../features/types";
 
 export interface AddClinicianProps {
   clinician: Clinician;
   onClose: (clinician: Clinician) => void;
   onCancel: () => void;
+  isEditing?: boolean;
 }
 
-function AddClinician({ clinician, onClose, onCancel }: AddClinicianProps) {
-  const [newClinician, setNewClinician] = useState(clinician);
+function AddEditClinician({
+  clinician,
+  onClose,
+  onCancel,
+  isEditing,
+}: AddClinicianProps) {
+  const [newClinician, setNewClinician] = useState<Clinician>(clinician);
+
+  const handleChange = (e: any, prop: string) => {
+    setNewClinician({ ...newClinician, [prop]: e.target.value });
+  };
+
   return (
     <div className="flex flex-col items-start px-10">
       <div>
         First Name:{" "}
         <input
           className="m-2"
-          value={clinician.firstName}
-          onChange={(e) =>
-            setNewClinician({ ...newClinician, firstName: e.target.value })
-          }
+          value={newClinician.firstName}
+          onChange={(e) => handleChange(e, "firstName")}
         />
         Last Name:{" "}
         <input
           className="m-2"
-          value={clinician.lastName}
-          onChange={(e) =>
-            setNewClinician({ ...newClinician, lastName: e.target.value })
-          }
+          value={newClinician.lastName}
+          onChange={(e) => handleChange(e, "lastName")}
         />
+      </div>
+      <div>
         Start Date:
         <input
           className="m-2"
           type="date"
-          value={clinician.startDate}
-          onChange={(e) =>
-            setNewClinician({ ...newClinician, startDate: e.target.value })
-          }
+          value={newClinician.startDate}
+          onChange={(e) => handleChange(e, "startDate")}
         />
-      </div>
-      <div>
-        Color:
+        Training Days:
         <input
           className="m-2"
-          type="text"
-          name="city"
-          list="cityname"
-          value={clinician.color}
-          onChange={(e) =>
-            setNewClinician({
-              ...newClinician,
-              color: e.target.value as ClinicianColor,
-            })
-          }
+          type="number"
+          value={newClinician.trainingDays}
+          onChange={(e) => handleChange(e, "trainingDays")}
         />
-        <datalist id="cityname">
-          <option value="green" />
-          <option value="blue" />
-          <option value="rebeccapurple" />
-          <option value="red" />
-        </datalist>
+        Color:
+        <select
+          className="m-2"
+          name="color"
+          value={newClinician.color}
+          onChange={(e) => handleChange(e, "color")}
+        >
+          <option value=""></option>
+          <option value="green">Green</option>
+          <option value="blue">Blue</option>
+          <option value="rebeccapurple">Purple</option>
+          <option value="red">Red</option>
+        </select>
+      </div>
+      <div>
         <button
           className="rounded-lg px-4 py-2 m-2 bg-blue-100 text-blue-800"
           type="button"
@@ -71,18 +78,18 @@ function AddClinician({ clinician, onClose, onCancel }: AddClinicianProps) {
           className="rounded-lg px-4 py-2 m-2 bg-blue-800 text-blue-100 disabled:bg-gray-300 disabled:text-white"
           type="button"
           onClick={() => onClose(newClinician)}
-          disabled={
-            !newClinician.firstName ||
-            !newClinician.lastName ||
-            !newClinician.color ||
-            !newClinician.startDate
-          }
+          // disabled={
+          //   !newClinician.firstName ||
+          //   !newClinician.lastName ||
+          //   !newClinician.color ||
+          //   !newClinician.startDate
+          // }
         >
-          Add Clinician
+          {isEditing ? "Edit" : "Add"} Clinician
         </button>
       </div>
     </div>
   );
 }
 
-export default AddClinician;
+export default AddEditClinician;

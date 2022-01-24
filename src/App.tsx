@@ -1,15 +1,41 @@
 import "./App.css";
 
 import React, { useState } from "react";
-
-import AddClinician from "./components/AddClinician";
+import { v4 as uuidv4 } from "uuid";
+import AddEditClinician from "./components/AddClinician";
+import { ExistingClinician } from "./components/ExistingClinician";
 import { Clinician } from "./features/types";
 import { mapDays } from "./features/utilities";
-import { last } from "lodash-es";
+import { Calendar } from "./components/Calendar";
 
 function App() {
   const [clinicians, setClinicians] = useState<Clinician[]>([]);
   const [showAdd, setShowAdd] = useState(false);
+  const [holidayCalendar] = useState(["01/01/2022", "07/04/2022"]);
+  const onClinicianEdit = (modifiedClinician: Clinician) => {
+    modifiedClinician.workDays = mapDays(
+      modifiedClinician.startDate,
+      modifiedClinician.trainingDays,
+      modifiedClinician.daysOff,
+      holidayCalendar
+    );
+    let modifiedClinicians = clinicians.filter(
+      (oldClinician) => oldClinician.guid !== modifiedClinician.guid
+    );
+    modifiedClinicians.push(modifiedClinician);
+    setClinicians(modifiedClinicians);
+  };
+
+  const onClinicianAdd = (clinician: Clinician) => {
+    clinician.guid = uuidv4();
+    clinician.workDays = mapDays(
+      clinician.startDate,
+      clinician.trainingDays,
+      clinician.daysOff,
+      holidayCalendar
+    );
+    setClinicians([...clinicians, ...[clinician]]);
+  };
   return (
     <div className="App">
       <h1 className="text-3xl font-bold py-4 underline">Clinician Calendar</h1>
@@ -21,28 +47,36 @@ function App() {
         + Add Clinician
       </button>
       {showAdd && (
-        <AddClinician
-          clinician={{} as Clinician}
+        <AddEditClinician
+          clinician={{
+            firstName: "",
+            lastName: "",
+            startDate: "",
+            color: "",
+            guid: "",
+            workDays: [],
+            trainingDays: 0,
+            daysOff: [],
+          }}
           onClose={(clinician) => {
-            setClinicians([...clinicians, ...[clinician]]);
+            onClinicianAdd(clinician);
             setShowAdd(false);
           }}
           onCancel={() => setShowAdd(false)}
         />
       )}
-      {clinicians.map((clinician) => (
-        <div key={`${clinician.lastName}${clinician.startDate}`}>
-          <span
-            className={`font-bold text-${clinician.color}-600`}
-            style={{ color: clinician.color }}
-          >
-            {clinician.firstName} {clinician.lastName}
-          </span>
-          {last(
-            mapDays(clinician, 7, ["01/17/2022", "01/18/2022"], ["01/01/2022"])
-          )}
-        </div>
-      ))}
+      <div className="flex">
+        {clinicians.map((clinician) => (
+          <div key={clinician.guid} className="w-64 p-3">
+            <ExistingClinician
+              clinician={clinician}
+              onClose={onClinicianEdit}
+              onCancel={() => undefined}
+            />
+          </div>
+        ))}
+      </div>
+      <Calendar clinicians={clinicians} />
     </div>
   );
 }
