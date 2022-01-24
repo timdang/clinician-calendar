@@ -9,9 +9,12 @@ import { mapDays } from "./features/utilities";
 import { Calendar } from "./components/Calendar";
 
 function App() {
-  const [clinicians, setClinicians] = useState<Clinician[]>(
-    JSON.parse(localStorage.getItem("clinicians") || "")
-  );
+  const c = localStorage.getItem("clinicians");
+  let cArray = [];
+  if (c) {
+    cArray = JSON.parse(c);
+  }
+  const [clinicians, setClinicians] = useState<Clinician[]>(cArray);
   const [showAdd, setShowAdd] = useState(false);
   const [holidayCalendar] = useState(["01/01/2022", "07/04/2022"]);
   const onClinicianEdit = (modifiedClinician: Clinician) => {
