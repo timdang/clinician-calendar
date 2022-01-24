@@ -78,12 +78,12 @@ function AddEditClinician({
           className="rounded-lg px-4 py-2 m-2 bg-blue-800 text-blue-100 disabled:bg-gray-300 disabled:text-white"
           type="button"
           onClick={() => onClose(newClinician)}
-          // disabled={
-          //   !newClinician.firstName ||
-          //   !newClinician.lastName ||
-          //   !newClinician.color ||
-          //   !newClinician.startDate
-          // }
+          disabled={
+            !newClinician.firstName ||
+            !newClinician.lastName ||
+            !newClinician.color ||
+            !newClinician.startDate
+          }
         >
           {isEditing ? "Edit" : "Add"} Clinician
         </button>

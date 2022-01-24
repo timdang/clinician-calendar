@@ -10,7 +10,7 @@ export const Calendar = ({ clinicians }: CalendarProps) => {
   return (
     <div className="grid grid-cols-5">
       {dayDetails.map((day) => (
-        <div key={day.date.toString()} className="border m-2">
+        <div key={day.date.toString()} className="border rounded m-2">
           <div>{day.date}</div>
           {day.cliniciansWorking.map((c) => (
             <div key={c.guid}>

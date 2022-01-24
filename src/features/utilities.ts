@@ -1,4 +1,10 @@
-import { addBusinessDays, isBefore, isSameDay, setHours } from "date-fns";
+import {
+  addBusinessDays,
+  isBefore,
+  isSameDay,
+  isWeekend,
+  setHours,
+} from "date-fns";
 import { forEach, last } from "lodash-es";
 
 import { Clinician, DaySomething } from "./types";
@@ -15,6 +21,9 @@ export const mapDays = (
     let nextDay = previousTrainingDay
       ? addBusinessDays(new Date(previousTrainingDay), 1)
       : setHours(new Date(startDate), 8);
+    if (isWeekend(nextDay)) {
+      nextDay = addBusinessDays(nextDay, 1);
+    }
     forEach(holidaySchedule, (holiday: string) => {
       if (isSameDay(setHours(new Date(holiday), 8), nextDay)) {
         nextDay = addBusinessDays(nextDay, 1);

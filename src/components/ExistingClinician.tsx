@@ -1,4 +1,4 @@
-import { last } from "lodash-es";
+import { first, last } from "lodash-es";
 import { useState } from "react";
 
 import AddEditClinician, { AddClinicianProps } from "./AddClinician";
@@ -34,6 +34,9 @@ export const ExistingClinician = ({
         >
           Edit
         </button>
+      </div>
+      <div>
+        First Training: {first(clinician.workDays)?.toLocaleDateString()}
       </div>
       <div>Last Training: {last(clinician.workDays)?.toLocaleDateString()}</div>
     </div>
