@@ -7,6 +7,7 @@ export const ExistingClinician = ({
   clinician,
   onClose,
   onDelete,
+  onSelect,
 }: AddClinicianProps) => {
   const [isEditingClinician, setIsEditingClinician] = useState(false);
   if (!clinician) return <></>;
@@ -25,7 +26,11 @@ export const ExistingClinician = ({
   ) : (
     <div className="rounded border-solid border border-neutral-400 h-20">
       <div>
-        <span className="font-bold" style={{ color: clinician.color }}>
+        <span
+          className="font-bold"
+          style={{ color: clinician.color }}
+          onClick={onSelect}
+        >
           {clinician.firstName} {clinician.lastName}
         </span>{" "}
         <button
@@ -38,11 +43,11 @@ export const ExistingClinician = ({
       </div>
       <div>
         First Training:{" "}
-        {new Date(first(clinician.workDays) || "").toLocaleDateString()}
+        {new Date(first(clinician.workDays)?.date || "").toLocaleDateString()}
       </div>
       <div>
         Last Training:{" "}
-        {new Date(last(clinician.workDays) || "").toLocaleDateString()}
+        {new Date(last(clinician.workDays)?.date || "").toLocaleDateString()}
       </div>
     </div>
   );

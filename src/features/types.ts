@@ -2,7 +2,7 @@ export interface Clinician {
   firstName: string;
   lastName: string;
   startDate: string;
-  workDays: string[];
+  workDays: DailyTask[];
   color: ClinicianColor;
   guid: string;
   trainingDays: number;
@@ -11,7 +11,8 @@ export interface Clinician {
 
 export type ClinicianColor = "" | "red" | "blue" | "rebeccapurple" | "green";
 
-export interface DaySomething {
+export interface DailyTask {
   date: string;
-  cliniciansWorking: Clinician[];
+  dailyTask: string;
+  trainingCount?: number;
 }

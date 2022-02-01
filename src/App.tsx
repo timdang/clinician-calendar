@@ -2,11 +2,12 @@ import "./App.css";
 
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+
 import AddEditClinician from "./components/AddClinician";
+import { Calendar } from "./components/Calendar";
 import { ExistingClinician } from "./components/ExistingClinician";
 import { Clinician } from "./features/types";
 import { mapDays } from "./features/utilities";
-import { Calendar } from "./components/Calendar";
 
 function App() {
   const c = localStorage.getItem("clinicians");
@@ -17,6 +18,7 @@ function App() {
   const [clinicians, setClinicians] = useState<Clinician[]>(cArray);
   const [showAdd, setShowAdd] = useState(false);
   const [holidayCalendar] = useState(["01/01/2022", "07/04/2022"]);
+  const [activeClinician, setActiveClinician] = useState<Clinician | null>();
   const onClinicianEdit = (modifiedClinician: Clinician) => {
     modifiedClinician.workDays = mapDays(
       modifiedClinician.startDate,
@@ -27,9 +29,11 @@ function App() {
     let modifiedClinicians = clinicians.filter(
       (oldClinician) => oldClinician.guid !== modifiedClinician.guid
     );
+
     modifiedClinicians.push(modifiedClinician);
     setClinicians(modifiedClinicians);
     localStorage.setItem("clinicians", JSON.stringify(modifiedClinicians));
+    setActiveClinician(modifiedClinician);
   };
 
   const onClinicianAdd = (clinician: Clinician) => {
@@ -43,6 +47,7 @@ function App() {
     const modifiedClinicians = [...clinicians, ...[clinician]];
     setClinicians(modifiedClinicians);
     localStorage.setItem("clinicians", JSON.stringify(modifiedClinicians));
+    setActiveClinician(clinician);
   };
 
   const onDeleteClinician = (deleted: Clinician) => {
@@ -51,6 +56,7 @@ function App() {
     );
     setClinicians(modifiedClinicians);
     localStorage.setItem("clinicians", JSON.stringify(modifiedClinicians));
+    setActiveClinician(null);
   };
 
   return (
@@ -92,11 +98,12 @@ function App() {
               onClose={onClinicianEdit}
               onCancel={() => undefined}
               onDelete={onDeleteClinician}
+              onSelect={() => setActiveClinician(clinician)}
             />
           </div>
         ))}
       </div>
-      <Calendar clinicians={clinicians} />
+      {activeClinician && <Calendar clinician={activeClinician} />}
     </div>
   );
 }

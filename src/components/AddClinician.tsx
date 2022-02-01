@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Clinician } from "../features/types";
+import { AddTimeOff } from "./AddTimeOff";
 
 export interface AddClinicianProps {
   clinician: Clinician;
@@ -8,6 +9,7 @@ export interface AddClinicianProps {
   onCancel: () => void;
   onDelete?: (clinician: Clinician) => void;
   isEditing?: boolean;
+  onSelect?: () => void;
 }
 
 function AddEditClinician({
@@ -74,7 +76,13 @@ function AddEditClinician({
           </select>
         </div>
       </div>
-      <div className="flex">
+      <div>
+        <AddTimeOff
+          days={newClinician.daysOff}
+          onClose={(e) => setNewClinician({ ...newClinician, daysOff: e })}
+        />
+      </div>
+      <div className="flex justify-between">
         {onDelete && (
           <button
             className="mr-8 text-red-800"
@@ -84,14 +92,15 @@ function AddEditClinician({
             Delete
           </button>
         )}
-        <button
-          className="px-4 py-2 text-blue-800"
-          type="button"
-          onClick={onCancel}
-        >
-          Cancel
-        </button>
-
+        {!isEditing && (
+          <button
+            className="px-4 py-2 text-blue-800"
+            type="button"
+            onClick={onCancel}
+          >
+            Cancel
+          </button>
+        )}
         <button
           className="rounded-lg px-4 py-1 m-2 bg-blue-800 text-blue-100 disabled:bg-gray-300 disabled:text-white"
           type="button"
