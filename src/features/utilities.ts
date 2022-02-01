@@ -3,55 +3,63 @@ import { forEach, last } from "lodash-es";
 
 import { DailyTask } from "./types";
 
+export const crudeWorkArray = [
+  "Orientation",
+  "Orientation",
+  "Orientation",
+  "Orientation",
+  "Orientation",
+  "Orientation",
+  "Orientation",
+  "Basic",
+  "Basic",
+  "Basic",
+  "Basic",
+  "Basic",
+  "Basic",
+  "Full",
+  "Full",
+  "Full",
+  "Full",
+  "Full",
+  "Full",
+  "Full",
+  "Full",
+  "Larc",
+  "Larc",
+  "Larc",
+  "Larc",
+  "Larc",
+  "Larc",
+  "Larc",
+  "Larc",
+  "All Service",
+  "All Service",
+  "All Service",
+  "All Service",
+  "All Service",
+  "All Service",
+  "All Service",
+  "All Service",
+  "All Service",
+  "All Service",
+  "Transitional",
+  "Transitional",
+  "Transitional",
+  "Transitional",
+];
+
 function* generateWorkDay() {
-  const crudeWorkArray = [
-    "Orientation",
-    "Orientation",
-    "Orientation",
-    "Orientation",
-    "Orientation",
-    "Orientation",
-    "Orientation",
-    "Basic",
-    "Basic",
-    "Basic",
-    "Basic",
-    "Basic",
-    "Basic",
-    "Full",
-    "Full",
-    "Full",
-    "Full",
-    "Full",
-    "Full",
-    "Full",
-    "Larc",
-    "Larc",
-    "Larc",
-    "Larc",
-    "Larc",
-    "Larc",
-    "Larc",
-    "Larc",
-    "All Service",
-    "All Service",
-    "All Service",
-    "All Service",
-    "All Service",
-    "All Service",
-    "All Service",
-    "All Service",
-    "All Service",
-    "All Service",
-    "Transitional",
-    "Transitional",
-    "Transitional",
-    "Transitional",
-  ];
   for (let i = 0; i < crudeWorkArray.length; i += 1) {
     yield crudeWorkArray[i];
   }
 }
+
+const getLastWorkDay = (dailyTasks: DailyTask[]): string => {
+  // TODO
+
+  return last(dailyTasks)?.dailyTask || "";
+};
 
 export const mapDays = (
   startDate: string,
@@ -61,10 +69,10 @@ export const mapDays = (
 ): DailyTask[] => {
   const taskDays: DailyTask[] = [];
   let count = 1;
-  let didacticDayCount = 4;
+  let didacticDayCount = 1;
   const workDescription = generateWorkDay();
 
-  while (count <= trainingDays) {
+  while (count <= +trainingDays) {
     const previousTrainingDay = last(taskDays)?.date;
     let nextDay = previousTrainingDay
       ? addBusinessDays(new Date(previousTrainingDay), 1)
@@ -77,6 +85,7 @@ export const mapDays = (
         taskDays.push({
           date: nextDay.toLocaleDateString(),
           dailyTask: "Holiday",
+          documentsDue: "",
         });
         nextDay = addBusinessDays(nextDay, 1);
       }
@@ -88,22 +97,25 @@ export const mapDays = (
         taskDays.push({
           date: nextDay.toLocaleDateString(),
           dailyTask: "ETO",
+          documentsDue: "",
         });
         nextDay = addBusinessDays(nextDay, 1);
       }
     });
-    if (isWednesday(nextDay) && didacticDayCount > 0) {
+    if (isWednesday(nextDay) && count > 7 && didacticDayCount < 8) {
       taskDays.push({
         date: nextDay.toLocaleDateString(),
-        dailyTask: "Didactic",
+        dailyTask: `Didactic ${didacticDayCount}`,
         trainingCount: count,
+        documentsDue: getLastWorkDay(taskDays),
       });
-      didacticDayCount--;
+      didacticDayCount++;
     } else {
       taskDays.push({
         date: nextDay.toLocaleDateString(),
         dailyTask: workDescription.next().value || "",
         trainingCount: count,
+        documentsDue: "",
       });
     }
     count++;

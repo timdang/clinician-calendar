@@ -15,4 +15,5 @@ export interface DailyTask {
   date: string;
   dailyTask: string;
   trainingCount?: number;
+  documentsDue: string;
 }

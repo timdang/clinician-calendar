@@ -23,6 +23,7 @@ export const CalendarDay = ({ day }: CalendarDayProps) => {
             {day.trainingCount && `Day ${day.trainingCount}`}
           </div>
           <div className="p-1">{day.dailyTask}</div>
+          {day.documentsDue && <div>{day.documentsDue}</div>}
         </div>
       </div>
     </>
