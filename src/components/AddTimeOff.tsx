@@ -13,10 +13,12 @@ export function AddTimeOff({ days, onClose, isETO = true }: AddTimeOffProps) {
   const [addDate, setAddDate] = useState(false);
 
   const onAddDate = (newDate: string) => {
-    const newDaysOff = uniq([
-      ...timeOff,
-      ...[new Date(newDate).toLocaleDateString()],
-    ]).sort((d1, d2) => (isBefore(new Date(d1), new Date(d2)) ? -1 : 1));
+    const newDayOff = new Date(
+      `${newDate} 8:00`.replace(/-/g, "/")
+    ).toLocaleDateString();
+    const newDaysOff = uniq([...timeOff, ...[newDayOff]]).sort((d1, d2) =>
+      isBefore(new Date(d1), new Date(d2)) ? -1 : 1
+    );
     setTimeOff(newDaysOff);
     onClose(newDaysOff);
     setDate("");
@@ -52,16 +54,24 @@ export function AddTimeOff({ days, onClose, isETO = true }: AddTimeOffProps) {
       )}
       {addDate && (
         <>
-          Add:
           <input
             className="m-2"
             type="date"
             value={date}
-            onChange={(e) => {
-              onAddDate(e.target.value);
+            onChange={(e) => setDate(e.target.value)}
+          />
+          <button
+            className="px-4 py-2 text-blue-800 disabled:text-neutral-300"
+            type="button"
+            disabled={!date}
+            onClick={() => {
+              console.warn(date);
+              onAddDate(date);
               setAddDate(false);
             }}
-          />
+          >
+            Add
+          </button>
         </>
       )}
       {!addDate && (

@@ -1,10 +1,4 @@
-import {
-  addBusinessDays,
-  isSameDay,
-  isWednesday,
-  isWeekend,
-  setHours,
-} from "date-fns";
+import { addBusinessDays, isSameDay, isWednesday, isWeekend } from "date-fns";
 import { forEach, last } from "lodash-es";
 
 import { DailyTask } from "./types";
@@ -74,12 +68,12 @@ export const mapDays = (
     const previousTrainingDay = last(taskDays)?.date;
     let nextDay = previousTrainingDay
       ? addBusinessDays(new Date(previousTrainingDay), 1)
-      : setHours(new Date(startDate), 8);
+      : new Date(`${startDate} 8:00`.replace(/-/g, "/"));
     if (isWeekend(nextDay)) {
       nextDay = addBusinessDays(nextDay, 1);
     }
     forEach(holidaySchedule, (holiday: string) => {
-      if (isSameDay(setHours(new Date(holiday), 8), nextDay)) {
+      if (isSameDay(new Date(`${holiday} 8:00`.replace(/-/g, "/")), nextDay)) {
         taskDays.push({
           date: nextDay.toLocaleDateString(),
           dailyTask: "Holiday",
@@ -88,7 +82,9 @@ export const mapDays = (
       }
     });
     forEach(daysOff, (vacationDay: string) => {
-      if (isSameDay(setHours(new Date(vacationDay), 8), nextDay)) {
+      if (
+        isSameDay(new Date(`${vacationDay} 8:00`.replace(/-/g, "/")), nextDay)
+      ) {
         taskDays.push({
           date: nextDay.toLocaleDateString(),
           dailyTask: "ETO",
