@@ -1,7 +1,7 @@
 import { addBusinessDays, isSameDay, isWednesday, isWeekend } from "date-fns";
-import { forEach, last } from "lodash-es";
+import { filter, forEach, last, some } from "lodash-es";
 
-import { DailyTask } from "./types";
+import { Clinician, DailyTask } from "./types";
 
 export const crudeWorkArray = [
   "Orientation",
@@ -55,10 +55,37 @@ function* generateWorkDay() {
   }
 }
 
-const getLastWorkDay = (dailyTasks: DailyTask[]): string => {
-  // TODO
-
-  return last(dailyTasks)?.dailyTask || "";
+// TODO - Refactor
+const getLastWorkDay = (taskDays: DailyTask[]): string => {
+  const lastWork = last(taskDays)?.dailyTask;
+  switch (lastWork) {
+    case "Basic":
+      return filter(taskDays, (day) => day.dailyTask === "Basic").length === 6
+        ? "Basic Due"
+        : "";
+    case "Full":
+      return filter(taskDays, (day) => day.dailyTask === "Full").length === 8
+        ? "Full Due"
+        : !some(taskDays, (day) => day.documentsDue === "Basic Due")
+        ? "Basic Due"
+        : "";
+    case "Larc":
+      return filter(taskDays, (day) => day.dailyTask === "Larc").length === 8
+        ? "Larc Due"
+        : !some(taskDays, (day) => day.documentsDue === "Full Due")
+        ? "Full Due"
+        : "";
+    case "All Service":
+      return filter(taskDays, (day) => day.dailyTask === "All Service")
+        .length === 10
+        ? "All Service Due"
+        : !some(taskDays, (day) => day.documentsDue === "Larc Due")
+        ? "Larc Due"
+        : "";
+    case "Orientation":
+    default:
+      return "";
+  }
 };
 
 export const mapDays = (
@@ -102,12 +129,14 @@ export const mapDays = (
         nextDay = addBusinessDays(nextDay, 1);
       }
     });
+    // Handle Wednesdays
     if (isWednesday(nextDay) && count > 7 && didacticDayCount < 8) {
+      const currentTaskDays = [...taskDays];
       taskDays.push({
         date: nextDay.toLocaleDateString(),
         dailyTask: `Didactic ${didacticDayCount}`,
         trainingCount: count,
-        documentsDue: getLastWorkDay(taskDays),
+        documentsDue: getLastWorkDay(currentTaskDays),
       });
       didacticDayCount++;
     } else {
@@ -123,27 +152,37 @@ export const mapDays = (
   return taskDays;
 };
 
-// export const mapCliniciansToDates = (
-//   clinicians: Clinician[]
-// ): DailyTask[] => {
-//   const results: DailyTask[] = [];
-//   const days: Map<string, Clinician[]> = new Map();
+export const exportTableToCSV = (clinician: Clinician) => {
+  var csv = [];
+  csv.push("Date,Training Count,Daily Task,Documents Due?");
+  const t = clinician.workDays;
 
-//   clinicians.forEach((clinician) => {
-//     clinician.workDays.forEach((dateString) => {
-//       if (!days.has(dateString)) {
-//         days.set(dateString, []);
-//       }
-//       const arr = days.get(dateString);
-//       if (arr) {
-//         arr.push(clinician);
-//       }
-//     });
-//   });
-//   days.forEach((day, key) =>
-//     results.push({ date: key, cliniciansWorking: day })
-//   );
-//   return results.sort((d1, d2) =>
-//     isBefore(new Date(d1.date), new Date(d2.date)) ? -1 : 1
-//   );
-// };
+  for (var i = 0; i < t.length; i++) {
+    var row = [
+      t[i].date,
+      t[i].trainingCount,
+      t[i].dailyTask,
+      t[i].documentsDue,
+    ];
+    csv.push(row.join(","));
+  }
+
+  // download csv file
+  downloadCSV(
+    csv.join("\n"),
+    `${clinician.lastName}_${clinician.firstName}.csv`
+  );
+};
+
+export const downloadCSV = (csv: string, filename: string) => {
+  var csvFile;
+  var downloadLink;
+
+  csvFile = new Blob([csv], { type: "text/csv" });
+  downloadLink = document.createElement("a");
+  downloadLink.download = filename;
+  downloadLink.href = window.URL.createObjectURL(csvFile);
+  downloadLink.style.display = "none";
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+};

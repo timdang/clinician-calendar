@@ -1,6 +1,7 @@
 import { getDay, isFirstDayOfMonth } from "date-fns";
 
 import { Clinician, DailyTask } from "../features/types";
+import { exportTableToCSV } from "../features/utilities";
 import { CalendarDay } from "./CalendarDay";
 
 export interface CalendarProps {
@@ -30,8 +31,19 @@ export const Calendar = ({ clinician }: CalendarProps) => {
   };
 
   return (
-    <div className="grid grid-cols-5">
-      {clinician.workDays?.map(calendarMapper)}
-    </div>
+    <>
+      <div>
+        <button
+          className="rounded-lg px-4 py-1 m-2 bg-blue-800 text-blue-100 disabled:bg-gray-300 disabled:text-white"
+          type="button"
+          onClick={() => exportTableToCSV(clinician)}
+        >
+          Export to CSV
+        </button>
+      </div>
+      <div className="grid grid-cols-5">
+        {clinician.workDays?.map(calendarMapper)}
+      </div>
+    </>
   );
 };
